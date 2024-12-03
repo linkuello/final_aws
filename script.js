@@ -28,6 +28,42 @@ document.getElementById('registrationForm').addEventListener('submit', function(
             document.getElementById('error-message').textContent = err.message || JSON.stringify(err);
             return;
         }
-        alert('Registration successful!');
+        // Если регистрация успешна, показываем игру
+        document.getElementById('registration-container').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        startGame();
     });
+});
+
+// Логика игры
+let randomNumber;
+let attempts = 0;
+
+function startGame() {
+    randomNumber = Math.floor(Math.random() * 100) + 1; // Генерация случайного числа от 1 до 100
+    attempts = 0;
+    document.getElementById('submit-guess').addEventListener('click', checkGuess);
+}
+
+function checkGuess() {
+    const guess = parseInt(document.getElementById('guess').value);
+    attempts++;
+
+    if (guess === randomNumber) {
+        document.getElementById('result-message').textContent = `Congratulations! You guessed the number in ${attempts} attempts.`;
+        document.getElementById('submit-guess').disabled = true;
+        document.getElementById('restart-game').style.display = 'inline-block';
+    } else if (guess < randomNumber) {
+        document.getElementById('result-message').textContent = 'Too low! Try again.';
+    } else {
+        document.getElementById('result-message').textContent = 'Too high! Try again.';
+    }
+}
+
+document.getElementById('restart-game').addEventListener('click', function() {
+    startGame();
+    document.getElementById('guess').value = '';
+    document.getElementById('result-message').textContent = '';
+    document.getElementById('restart-game').style.display = 'none';
+    document.getElementById('submit-guess').disabled = false;
 });
