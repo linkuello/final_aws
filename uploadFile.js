@@ -1,31 +1,26 @@
-import AWS from 'aws-sdk';
+const uploadFileToS3 = (file) => {
+    const AWS = require('aws-sdk');
+    AWS.config.update({
+        region: 'us-west-2',
+        credentials: new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'your-identity-pool-id',
+        }),
+    });
 
-const s3 = new AWS.S3({
-    accessKeyId: 'your-access-key-id',  // Замените на ваш accessKeyId
-    secretAccessKey: 'your-secret-access-key',  // Замените на ваш secretAccessKey
-    region: 'your-region',  // Замените на ваш регион
-});
+    const s3 = new AWS.S3();
 
-function uploadFile(file) {
     const params = {
-        Bucket: 'your-bucket-name',  // Замените на имя вашего бакета S3
+        Bucket: 'your-s3-bucket-name',
         Key: file.name,
         Body: file,
+        ACL: 'public-read',
     };
+
     s3.upload(params, function(err, data) {
         if (err) {
-            console.log('Error', err);
+            console.log('Error uploading file:', err);
         } else {
-            console.log('Successfully uploaded file', data);
+            console.log('File uploaded successfully:', data.Location);
         }
     });
-}
-
-// Пример использования
-const fileInput = document.getElementById('fileInput');
-fileInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        uploadFile(file);
-    }
-});
+};
