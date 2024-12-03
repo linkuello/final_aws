@@ -1,13 +1,11 @@
-// Подключение SDK
-import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-
+// Настройка параметров Cognito
 const poolData = {
-    UserPoolId: 'your-user-pool-id', // Замените на ваш UserPoolId
-    ClientId: 'your-client-id', // Замените на ваш ClientId
+    UserPoolId: 'your-user-pool-id', // Укажите свой User Pool ID
+    ClientId: 'your-app-client-id' // Укажите свой App Client ID
 };
+const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-const userPool = new CognitoUserPool(poolData);
-
+// Обработчик формы регистрации
 document.getElementById('registrationForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -15,13 +13,15 @@ document.getElementById('registrationForm').addEventListener('submit', function(
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
+    // Создание списка атрибутов (например, email)
     const attributeList = [];
-    const emailAttribute = new CognitoUserAttribute({
+    const emailAttribute = new AmazonCognitoIdentity.CognitoUserAttribute({
         Name: 'email',
         Value: email,
     });
     attributeList.push(emailAttribute);
 
+    // Регистрация пользователя
     userPool.signUp(username, password, attributeList, null, function(err, result) {
         if (err) {
             console.error(err);
