@@ -1,3 +1,13 @@
+// Подключение SDK
+import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
+
+const poolData = {
+    UserPoolId: 'your-user-pool-id', // Замените на ваш UserPoolId
+    ClientId: 'your-client-id', // Замените на ваш ClientId
+};
+
+const userPool = new CognitoUserPool(poolData);
+
 document.getElementById('registrationForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -5,12 +15,19 @@ document.getElementById('registrationForm').addEventListener('submit', function(
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Simple validation
-    if (!username || !email || !password) {
-        document.getElementById('error-message').textContent = 'All fields are required.';
-        return;
-    }
+    const attributeList = [];
+    const emailAttribute = new CognitoUserAttribute({
+        Name: 'email',
+        Value: email,
+    });
+    attributeList.push(emailAttribute);
 
-    // Here you would handle registration logic, for example with AWS Cognito.
-    alert('Registration successful!');
+    userPool.signUp(username, password, attributeList, null, function(err, result) {
+        if (err) {
+            console.error(err);
+            document.getElementById('error-message').textContent = err.message || JSON.stringify(err);
+            return;
+        }
+        alert('Registration successful!');
+    });
 });
